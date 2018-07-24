@@ -12,7 +12,8 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('tasks.index');
+    // return redirect()->route('login');
 });
 
 Route::resource('/tasks', 'TaskController');
