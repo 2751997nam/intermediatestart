@@ -7,4 +7,5 @@ return [
     'save' => 'save',
     'input_name' => 'Input Task Name',
     'delete' => 'Delete',
+    'edit' => 'Edit'
 ];

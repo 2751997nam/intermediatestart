@@ -27,7 +27,9 @@
                         <td class="table-text">
                             <div>{{ $task->name }}</div>
                         </td>
-
+                        <td>
+                            <a href="{{ route('tasks.edit', ['id' => $task->id]) }}" class="btn btn-primary">@lang('messages.edit')</a>
+                        </td>
                         <td>
                             <!-- TODO: Delete Button -->
                             {!! Form::open(['method' => 'Delete', 'url' => route('tasks.destroy', ['id' => $task->id]),

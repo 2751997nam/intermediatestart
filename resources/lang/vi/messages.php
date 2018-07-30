@@ -7,4 +7,5 @@ return [
     'save' => 'Lưu',
     'input_name' => 'Điền tên task',
     'delete' => 'Xóa',
+    'edit' => 'Sửa',
 ];

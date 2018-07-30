@@ -11,7 +11,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
@@ -36,6 +36,14 @@
                     <ul class="navbar-nav mr-auto">
 
                     </ul>
+                    <div class="switch-lang">
+                        {!! Form::open(['method' => 'GET', 'url' => route('lang.switch'), 'id' => 'switch-lang']) !!}
+                           <select name="locale" id="lang" class="form-control">
+                               <option value="en">English</option>
+                               <option value="vi">Tiếng Việt</option>
+                           </select>
+                        {!! Form::close() !!}
+                    </div>
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
@@ -73,7 +81,14 @@
         <main class="py-4">
             @yield('content')
         </main>
-        @yield('script')
     </div>
+    @yield('script')
+    <script>
+        $('#lang').val('{{ app()->getLocale() }}')
+        $('#lang').change(function()
+        {
+            $('#switch-lang').submit();
+        })
+    </script>
 </body>
 </html>

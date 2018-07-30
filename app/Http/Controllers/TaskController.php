@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Task;
+use Illuminate\Http\Request;
 use App\Repositories\TaskRepository;
+use Illuminate\Support\Facades\Gate;
 
 class TaskController extends Controller
 {
@@ -76,7 +77,15 @@ class TaskController extends Controller
      */
     public function edit($id)
     {
-        //
+        $task = Task::findOrFail($id);
+        if(Gate::allows('edit-task', $task))
+        {
+            echo "allowed";
+        }
+        else
+        {
+            echo "permission denied";
+        }      
     }
 
     /**
