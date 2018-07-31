@@ -17,9 +17,9 @@ class Localization
      */
     public function handle($request, Closure $next)
     {
-        if(!Session::has('locale'))
+        if(!Session::has('locale')) // kiểm tra session đã được set locale chưa
         {
-            Session::put('locale', config('app.locale'));
+            Session::put('locale', config('app.locale')); //set locale mặc định
         }
         Lang::setLocale(Session::get('locale'));
         app()->setLocale(Session::get('locale'));

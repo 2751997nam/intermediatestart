@@ -1,4 +1,4 @@
-<!-- resources/views/tasks/create.blade.php -->
+<!-- resources/views/tasks/edit.blade.php -->
 
 @extends('layouts.app')
 
@@ -11,7 +11,7 @@
         @include('common.errors')
 
         <!-- New Task Form -->
-        {!! Form::open(['method' => 'POST', 'url' => route('tasks.store'), 'class' => 'form-horizontal']) !!}
+        {!! Form::model($task, ['method' => 'PATCH', 'url' => route('tasks.update', ['id' => $task->id]), 'class' => 'form-horizontal']) !!}
         
             <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                 {!! Form::label('name', Lang::get('messages.input_name')) !!}

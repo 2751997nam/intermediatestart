@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Task;
+use App\Events\CreateTask;
 use Illuminate\Http\Request;
 use App\Repositories\TaskRepository;
 use Illuminate\Support\Facades\Gate;
@@ -51,9 +52,10 @@ class TaskController extends Controller
             'name' => 'required|max:255',
         ]);
 
-        $request->user()->tasks()->create([
+        $task = $request->user()->tasks()->create([
             'name' => $request->name,
         ]);
+        return event(new CreateTask($task));
 
         return redirect('/tasks');
     }
@@ -80,7 +82,7 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
         if(Gate::allows('edit-task', $task))
         {
-            echo "allowed";
+            return view('tasks/edit', compact('task'));
         }
         else
         {
@@ -97,7 +99,10 @@ class TaskController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $task = Task::findOrFail($id);
+        $task->fill($request->all());
+        $task->save();
+        return redirect()->route('tasks.index');
     }
 
     /**

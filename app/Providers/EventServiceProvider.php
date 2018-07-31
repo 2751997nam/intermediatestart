@@ -13,13 +13,13 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\Event' => [
-            'App\Listeners\EventListener',
+        'App\Events\CreateTask' => [
+            'App\Listeners\CreateTaskListener',
         ],
     ];
 
     /**
-     * Register any events for your application.
+     * Register any task created for your application.
      *
      * @return void
      */
