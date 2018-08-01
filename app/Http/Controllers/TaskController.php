@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Task;
 use App\Events\CreateTask;
-use Illuminate\Http\Request;
 use App\Repositories\TaskRepository;
+use App\Task;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class TaskController extends Controller
 {
-
     protected $tasks;
 
     public function __construct(TaskRepository $tasks)
@@ -26,7 +25,7 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         return view('tasks/index', [
-            'tasks' => $this->tasks->forUser($request->user())
+            'tasks' => $this->tasks->forUser($request->user()),
         ]);
     }
 
@@ -55,7 +54,7 @@ class TaskController extends Controller
         $task = $request->user()->tasks()->create([
             'name' => $request->name,
         ]);
-        return event(new CreateTask($task));
+        event(new CreateTask($task));
 
         return redirect('/tasks');
     }
@@ -80,14 +79,11 @@ class TaskController extends Controller
     public function edit($id)
     {
         $task = Task::findOrFail($id);
-        if(Gate::allows('edit-task', $task))
-        {
+        if (Gate::allows('edit-task', $task)) {
             return view('tasks/edit', compact('task'));
-        }
-        else
-        {
+        } else {
             echo "permission denied";
-        }      
+        }
     }
 
     /**
