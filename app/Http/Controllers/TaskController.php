@@ -2,22 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CreateTask;
+use App\Repositories\TaskRepository;
+use App\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TaskController extends Controller
 {
-    public function __contruct()
+    protected $tasks;
+
+    public function __construct(TaskRepository $tasks)
     {
         $this->middleware('auth');
+        $this->tasks = $tasks;
     }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return view('tasks/index', [
+            'tasks' => $this->tasks->forUser($request->user()),
+        ]);
     }
 
     /**
@@ -27,7 +36,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        //
+        return view('tasks/create');
     }
 
     /**
@@ -38,7 +47,16 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required|max:255',
+        ]);
+
+        $task = $request->user()->tasks()->create([
+            'name' => $request->name,
+        ]);
+        event(new CreateTask($task));
+
+        return redirect('/tasks');
     }
 
     /**
@@ -60,7 +78,12 @@ class TaskController extends Controller
      */
     public function edit($id)
     {
-        //
+        $task = Task::findOrFail($id);
+        if (Gate::allows('edit-task', $task)) {
+            return view('tasks/edit', compact('task'));
+        } else {
+            echo "permission denied";
+        }
     }
 
     /**
@@ -72,7 +95,10 @@ class TaskController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $task = Task::findOrFail($id);
+        $task->fill($request->all());
+        $task->save();
+        return redirect()->route('tasks.index');
     }
 
     /**
@@ -83,6 +109,12 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $task = Task::findOrFail($id);
+
+        $this->authorize('destroy', $task);
+
+        $task->delete();
+
+        return redirect('/tasks');
     }
 }

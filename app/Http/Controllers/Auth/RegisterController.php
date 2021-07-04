@@ -3,8 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Mail\RegisterEmailConfirm;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
@@ -28,7 +34,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/tasks';
 
     /**
      * Create a new controller instance.
@@ -67,6 +73,42 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'verifyToken' => Str::random(40),
         ]);
+    }
+
+    public function register(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $this->validator($request->all())->validate();
+            event(new Registered($user = $this->create($request->all())));
+            // Gui email khi nguoi dung dang ky
+            $email = new RegisterEmailConfirm($user);
+            Mail::to($user->email)
+            ->send($email);
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            
+            return $e;
+        }
+
+        return $this->registered($request, $user)
+        ?: redirect($this->redirectPath());
+    }
+
+    public function verify($verifyToken)
+    {
+        $user = User::where(['verifyToken' => $verifyToken])->first();
+        if ($user) {
+            $user->verified = true;
+            $user->verifyToken = null;
+            $user->save();
+
+            return redirect()->route('login');
+        } else {
+            return "Không hợp lệ";
+        }
     }
 }

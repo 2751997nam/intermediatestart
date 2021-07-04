@@ -1,39 +1,53 @@
-<!-- resources/views/tasks/index.blade.php -->
-
 @extends('layouts.app')
 
 @section('content')
+<!-- Create Task Form... -->
 
-    <!-- Bootstrap Boilerplate... -->
+<!-- Current Tasks -->
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            @lang('messages.current_task')
+        </div>
+        <div class="panel-body">
+            <a href="{{ route('tasks.create') }}" class="btn btn-primary">@lang('messages.create_new_task')</a>
+            <table class="table table-striped task-table">
 
-    <div class="panel-body">
-        <!-- Display Validation Errors -->
-        @include('common.errors')
+                <!-- Table Headings -->
+                <thead>
+                    <th>Task</th>
+                    <th>&nbsp;</th>
+                </thead>
 
-        <!-- New Task Form -->
-        <form action="{{ url('task') }}" method="POST" class="form-horizontal">
-            {{ csrf_field() }}
-
-            <!-- Task Name -->
-            <div class="form-group">
-                <label for="task-name" class="col-sm-3 control-label">Task</label>
-
-                <div class="col-sm-6">
-                    <input type="text" name="name" id="task-name" class="form-control">
-                </div>
-            </div>
-
-            <!-- Add Task Button -->
-            <div class="form-group">
-                <div class="col-sm-offset-3 col-sm-6">
-                    <button type="submit" class="btn btn-default">
-                        <i class="fa fa-plus"></i> Add Task
-                    </button>
-                </div>
-            </div>
-        </form>
+                <!-- Table Body -->
+                <tbody>
+                    @forelse ($tasks as $task)
+                    <tr>
+                        <!-- Task Name -->
+                        <td class="table-text">
+                            <div>{{ $task->name }}</div>
+                        </td>
+                        <td>
+                            <a href="{{ route('tasks.edit', ['id' => $task->id]) }}" class="btn btn-primary">@lang('messages.edit')</a>
+                        </td>
+                        <td>
+                            <!-- TODO: Delete Button -->
+                            {!! Form::open(['method' => 'Delete', 'url' => route('tasks.destroy', ['id' => $task->id]),
+                            'class' => 'form-horizontal']) !!}
+                            {!! Form::submit(Lang::get('messages.delete'), 
+                            ['class' => 'btn btn-danger pull-right']) !!}
+                            {!! Form::close() !!}
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="2">@lang('messages.no_data')</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
-
-    <!-- TODO: Current Tasks -->
+</div>
 @endsection
 

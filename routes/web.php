@@ -12,9 +12,11 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('tasks.index');
+    // return redirect()->route('login');
 });
 
 Route::resource('/tasks', 'TaskController');
-
+Route::get('/lang', 'LangController@switch')->name('lang.switch');
+Route::post('register/verify/{token}', 'Auth\RegisterController@verify')->name('register.verify');
 Auth::routes();
